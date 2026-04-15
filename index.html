@@ -49,14 +49,15 @@
     /* ── SIDEBAR ── */
     .sidebar {
       width: var(--sidebar-w);
+      height: 100vh;
       position: fixed; top: 0; left: 0; bottom: 0;
       background: var(--surface);
       border-right: 1px solid var(--border);
       display: flex; flex-direction: column;
       padding: 2.5rem 1.8rem;
-      z-index: 100;
+      z-index: 1000;
       overflow-y: auto;
-      transition: transform 0.35s cubic-bezier(.77,0,.18,1);
+      transition: left 0.35s cubic-bezier(.77,0,.18,1), transform 0.35s cubic-bezier(.77,0,.18,1);
     }
  
     .sidebar-profile { text-align: center; margin-bottom: 2.2rem; }
@@ -549,7 +550,7 @@
     /* ── HAMBURGER (mobile) ── */
     .hamburger-btn {
       display: none; position: fixed; top: 1rem; right: 1rem;
-      z-index: 200; background: var(--surface); border: 1px solid var(--border);
+      z-index: 1100; background: var(--surface); border: 1px solid var(--border);
       border-radius: 8px; width: 40px; height: 40px; cursor: pointer;
       flex-direction: column; align-items: center; justify-content: center; gap: 5px;
     }
@@ -615,10 +616,10 @@
       .services-grid { grid-template-columns: repeat(2, 1fr); }
     }
     @media (max-width: 900px) {
-      .sidebar { transform: translateX(-100%); }
-      .sidebar.open { transform: translateX(0); }
+      .sidebar { left: -280px; width: min(280px, 100%); transform: none; box-shadow: 24px 0 56px rgba(0,0,0,0.25); }
+      .sidebar.open { left: 0; transform: none !important; }
       .main, footer { margin-left: 0; }
-      .main { padding: 3rem 2rem 3rem; }
+      .main { padding: 3rem 2rem 3rem; width: 100%; }
       footer { padding: 1.5rem 2rem; }
       #presentation { padding: 3.5rem 1.8rem 2.5rem; border-radius: 24px; background-size: cover; background-position: center; }
       .hero-title { font-size: clamp(2.2rem, 8vw, 3.5rem); }
@@ -981,14 +982,16 @@
     const themeBtn = document.getElementById('themeBtn');
     const savedTheme = localStorage.getItem('theme') || 'dark';
     document.documentElement.setAttribute('data-theme', savedTheme);
-    themeBtn.textContent = savedTheme === 'dark' ? '☀️ Changer le thème' : '🌙 Changer le thème';
-    themeBtn.addEventListener('click', () => {
-      const cur = document.documentElement.getAttribute('data-theme');
-      const newTheme = cur === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', newTheme);
-      localStorage.setItem('theme', newTheme);
-      themeBtn.textContent = newTheme === 'dark' ? '☀️ Changer le thème' : '🌙 Changer le thème';
-    });
+    if (themeBtn) {
+      themeBtn.textContent = savedTheme === 'dark' ? '☀️ Changer le thème' : '🌙 Changer le thème';
+      themeBtn.addEventListener('click', () => {
+        const cur = document.documentElement.getAttribute('data-theme');
+        const newTheme = cur === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        themeBtn.textContent = newTheme === 'dark' ? '☀️ Changer le thème' : '🌙 Changer le thème';
+      });
+    }
  
     // ── HAMBURGER ──
     const hamburgerBtn = document.getElementById('hamburgerBtn');

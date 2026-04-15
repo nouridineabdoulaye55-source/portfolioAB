@@ -2,8 +2,9 @@
 <html lang="fr" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Abdoulaye Nouridine — Développeur Web & Mobile</title>
+  <meta name="description" content="Portfolio d'Abdoulaye Nouridine, développeur web et mobile passionné. Découvrez mes projets, compétences et services en développement d'applications modernes." />
+  <meta name="keywords" content="développeur web, développeur mobile, React Native, portfolio, Abdoulaye Nouridine" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👨‍💻</text></svg>">
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
   <style>
     /* ── TOKENS ── */
@@ -573,16 +574,46 @@
     .modal-content img {
       width: 100%; height: auto; border-radius: 12px;
       box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      max-width: 90vw; max-height: 80vh; object-fit: contain;
     }
     .close-modal {
-      position: absolute; top: -40px; right: 0;
+      position: absolute; top: 10px; right: 10px;
       color: #fff; font-size: 28px; font-weight: bold;
       cursor: pointer; transition: color 0.2s;
+      background: rgba(0,0,0,0.5); border-radius: 50%; width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      background: none; border: none; padding: 0;
     }
     .close-modal:hover { color: var(--accent); }
-    @keyframes modalFadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+    .back-to-top {
+      position: fixed; bottom: 2rem; right: 2rem;
+      background: var(--accent); color: #0e1117;
+      border: none; border-radius: 50%; width: 50px; height: 50px;
+      cursor: pointer; opacity: 0; visibility: hidden;
+      transition: all 0.3s; z-index: 100;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+    }
+    .back-to-top.visible { opacity: 1; visibility: visible; }
+    .loader {
+      position: fixed; inset: 0; background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 9999; transition: opacity 0.5s, visibility 0.5s;
+    }
+    .loader.hidden { opacity: 0; visibility: hidden; }
+    .loader-spinner {
+      width: 50px; height: 50px; border: 4px solid var(--border);
+      border-top: 4px solid var(--accent); border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
 
     /* ── RESPONSIVE ── */
+    @media (max-width: 1200px) {
+      --sidebar-w: 260px;
+      .main { padding: 3rem 3rem; }
+      .projects-grid { grid-template-columns: repeat(2, 1fr); }
+      .services-grid { grid-template-columns: repeat(2, 1fr); }
+    }
     @media (max-width: 900px) {
       .sidebar { transform: translateX(-100%); }
       .sidebar.open { transform: translateX(0); }
@@ -603,22 +634,38 @@
       .services-grid { grid-template-columns: 1fr; }
       .stats-row { flex-direction: column; }
       .highlight-cards { grid-template-columns: 1fr; }
-      #presentation { padding: 2rem 1.2rem 1.5rem; background-size: cover; background-position: center; }
+      #presentation { padding: 1.5rem 1rem 1rem; background-size: cover; background-position: center; }
       .section { margin-bottom: 4.5rem; }
       .hero-btns { flex-direction: column; }
       .hero-profile-card { flex-direction: column; gap: 1rem; padding: 1rem; }
       .hero-profile-images { justify-content: center; gap: 0.5rem; }
-      .hero-profile-images img { width: 100%; max-width: 120px; height: auto; margin: 0 auto; border-radius: 20px; }
+      .hero-profile-images img { width: 48%; max-width: 100px; height: auto; margin: 0; border-radius: 20px; }
       .click-arrow { display: none; }
       .sidebar-avatar { width: 80px; height: 80px; }
+    }
+    @media (max-width: 480px) {
+      .main { padding: 2rem 1rem 2rem; }
+      footer { padding: 1rem; }
+      #presentation { padding: 1.5rem 1rem 1rem; }
+      .hero-title { font-size: clamp(1.8rem, 10vw, 2.5rem); }
+      .hero-desc { font-size: 0.9rem; }
+      .hero-profile-card { padding: 0.8rem; }
+      .hero-profile-images img { max-width: 100px; }
+      .stats-row .stat { padding: 1rem 0.8rem; }
+      .section-title { font-size: clamp(1.5rem, 4vw, 2.2rem); }
+      .projects-grid, .services-grid { gap: 1rem; }
+      .project-card, .service-card { padding: 1rem; }
+      .contact-grid { gap: 2rem; }
     }
   </style>
 </head>
 <body>
  
-  <button class="hamburger-btn" id="hamburgerBtn" aria-label="Menu">
-    <span></span><span></span><span></span>
-  </button>
+  <div class="loader" id="loader">
+    <div class="loader-spinner"></div>
+  </div>
+ 
+  <button class="back-to-top" id="backToTop" aria-label="Retour en haut">↑</button>
  
   <div class="layout">
     <!-- SIDEBAR -->
@@ -646,7 +693,7 @@
         <a href="mailto:abdoulaye@email.com" class="social-link" title="Email">📧</a>
         <a href="#" target="_blank" class="social-link" title="LinkedIn">🔗</a>
       </div>
-      <button class="theme-btn" id="themeBtn">☀️ Changer le thème</button>
+      <button class="theme-btn" id="themeBtn" aria-label="Changer le thème">☀️ Changer le thème</button>
     </aside>
  
     <!-- MAIN CONTENT -->
@@ -825,7 +872,7 @@
         </div>
         <div class="projects-grid">
           <div class="project-card reveal" data-cat="web">
-            <img class="project-img" src="https://images.unsplash.com/photo-1547658719-da2b51169166?w=800&q=80" alt="Plateforme de Gestion"/>
+            <img class="project-img" src="https://images.unsplash.com/photo-1547658719-da2b51169166?w=800&q=80" alt="Plateforme de Gestion" loading="lazy"/>
             <div class="project-body">
               <div class="project-meta">
                 <span class="project-year">2024</span>
@@ -838,7 +885,7 @@
             </div>
           </div>
           <div class="project-card reveal" data-cat="ecommerce">
-            <img class="project-img" src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=800&q=80" alt="Boutique en Ligne"/>
+            <img class="project-img" src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=800&q=80" alt="Boutique en Ligne" loading="lazy"/>
             <div class="project-body">
               <div class="project-meta">
                 <span class="project-year">2024</span>
@@ -851,7 +898,7 @@
             </div>
           </div>
           <div class="project-card reveal" data-cat="mobile">
-            <img class="project-img" src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&q=80" alt="App Mobile"/>
+            <img class="project-img" src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&q=80" alt="App Mobile" loading="lazy"/>
             <div class="project-body">
               <div class="project-meta">
                 <span class="project-year">2024</span>
@@ -864,7 +911,7 @@
             </div>
           </div>
           <div class="project-card reveal" data-cat="web">
-            <img class="project-img" src="https://images.unsplash.com/photo-1555421689-491a97ff2040?w=800&q=80" alt="Site Vitrine"/>
+            <img class="project-img" src="https://images.unsplash.com/photo-1555421689-491a97ff2040?w=800&q=80" alt="Site Vitrine" loading="lazy"/>
             <div class="project-body">
               <div class="project-meta">
                 <span class="project-year">2024</span>
@@ -928,10 +975,15 @@
   <script>
     // ── THEME ──
     const themeBtn = document.getElementById('themeBtn');
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    themeBtn.textContent = savedTheme === 'dark' ? '☀️ Changer le thème' : '🌙 Changer le thème';
     themeBtn.addEventListener('click', () => {
       const cur = document.documentElement.getAttribute('data-theme');
-      document.documentElement.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
-      themeBtn.textContent = cur === 'dark' ? '🌙 Changer le thème' : '☀️ Changer le thème';
+      const newTheme = cur === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      themeBtn.textContent = newTheme === 'dark' ? '☀️ Changer le thème' : '🌙 Changer le thème';
     });
  
     // ── HAMBURGER ──
@@ -965,7 +1017,7 @@
     setInterval(() => {
       heroBgIndex = (heroBgIndex + 1) % heroBackgrounds.length;
       heroSection.style.backgroundImage = `linear-gradient(180deg, rgba(14,17,23,0.92) 0%, rgba(14,17,23,0.68) 30%, rgba(14,17,23,0.95) 100%), url('${heroBackgrounds[heroBgIndex]}')`;
-    }, 2000);
+    }, 5000);
  
     // ── REVEAL ──
     const observer = new IntersectionObserver(entries => {
@@ -1073,10 +1125,9 @@
       modal.style.display = 'none';
     });
 
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) {
-        modal.style.display = 'none';
-      }
+    // ── LOADER ──
+    window.addEventListener('load', () => {
+      setTimeout(() => document.getElementById('loader').classList.add('hidden'), 500);
     });
   </script>
 </body>

@@ -665,6 +665,9 @@
     <div class="loader-spinner"></div>
   </div>
  
+  <button class="hamburger-btn" id="hamburgerBtn" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
   <button class="back-to-top" id="backToTop" aria-label="Retour en haut">↑</button>
  
   <div class="layout">
@@ -989,10 +992,12 @@
     // ── HAMBURGER ──
     const hamburgerBtn = document.getElementById('hamburgerBtn');
     const sidebar = document.getElementById('sidebar');
-    hamburgerBtn.addEventListener('click', () => sidebar.classList.toggle('open'));
-    document.addEventListener('click', e => {
-      if (!sidebar.contains(e.target) && !hamburgerBtn.contains(e.target)) sidebar.classList.remove('open');
-    });
+    if (hamburgerBtn && sidebar) {
+      hamburgerBtn.addEventListener('click', () => sidebar.classList.toggle('open'));
+      document.addEventListener('click', e => {
+        if (!sidebar.contains(e.target) && !hamburgerBtn.contains(e.target)) sidebar.classList.remove('open');
+      });
+    }
  
     // ── NAV ACTIVE ──
     const navItems = document.querySelectorAll('.nav-item');
@@ -1126,8 +1131,8 @@
     });
 
     // ── LOADER ──
-    window.addEventListener('load', () => {
-      setTimeout(() => document.getElementById('loader').classList.add('hidden'), 500);
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('loader').classList.add('hidden');
     });
   </script>
 </body>

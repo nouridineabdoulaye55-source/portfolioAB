@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Abdoulaye Nouridine — Développeur Web & Mobile</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    /* ── TOKENS ── */
+    :root {
+      --bg: #0e1117;
+      --surface: #161b24;
+      --card: #1c2333;
+      --border: rgba(255,255,255,0.07);
+      --accent: #4ade80;
+      --accent-dim: rgba(74,222,128,0.12);
+      --accent2: #60a5fa;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --sidebar-w: 280px;
+      --radius: 10px;
+    }
+    [data-theme="light"] {
+      --bg: #f4f6fa;
+      --surface: #ffffff;
+      --card: #f0f2f7;
+      --border: rgba(0,0,0,0.08);
+      --text: #1a202c;
+      --muted: #64748b;
+      --accent-dim: rgba(74,222,128,0.15);
+    }
+ 
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    img { max-width: 100%; height: auto; display: block; }
+    body {
+      background: radial-gradient(circle at top, #131a2a 0%, #0b1018 38%, #0e1117 100%);
+      color: var(--text);
+      font-family: 'Sora', sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+ 
+    /* ── LAYOUT ── */
+    .layout { display: flex; min-height: 100vh; }
+ 
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      position: fixed; top: 0; left: 0; bottom: 0;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      padding: 2.5rem 1.8rem;
+      z-index: 100;
+      overflow-y: auto;
+      transition: transform 0.35s cubic-bezier(.77,0,.18,1);
+    }
+ 
+    .sidebar-profile { text-align: center; margin-bottom: 2.2rem; }
+    .sidebar-avatar {
+      width: 90px; height: 90px;
+      border-radius: 50%; object-fit: cover;
+      border: 3px solid var(--accent);
+      box-shadow: 0 0 0 6px var(--accent-dim);
+      display: block; margin: 0 auto 1rem;
+    }
+    .sidebar-name {
+      font-size: 1.05rem; font-weight: 700; color: var(--text);
+      margin-bottom: 0.2rem;
+    }
+    .sidebar-role {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem; color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+    .sidebar-location {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      font-size: 0.72rem; color: var(--muted); margin-top: 0.4rem;
+    }
+ 
+    .availability {
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.55rem 1rem; border-radius: 99px;
+      background: var(--accent-dim);
+      border: 1px solid rgba(74,222,128,0.25);
+      font-size: 0.72rem; color: var(--accent);
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.04em; margin: 1rem auto;
+      width: fit-content; cursor: default;
+    }
+    .avail-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--accent); flex-shrink: 0;
+      animation: blink 2s infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+ 
+    .sidebar-nav { margin-top: 0.5rem; }
+    .nav-item {
+      display: flex; align-items: center; gap: 0.8rem;
+      padding: 0.75rem 0.9rem; border-radius: var(--radius);
+      color: var(--muted); text-decoration: none;
+      font-size: 0.85rem; font-weight: 500;
+      transition: background 0.2s, color 0.2s;
+      margin-bottom: 0.15rem;
+    }
+    .nav-item:hover, .nav-item.active {
+      background: var(--accent-dim); color: var(--accent);
+    }
+    .nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+ 
+    .sidebar-socials {
+      margin-top: auto; padding-top: 1.5rem;
+      display: flex; gap: 0.7rem; justify-content: center;
+      flex-wrap: wrap;
+    }
+    .social-link {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 36px; height: 36px; border-radius: 8px;
+      background: var(--card); border: 1px solid var(--border);
+      color: var(--muted); text-decoration: none; font-size: 0.9rem;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+    }
+    .social-link:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+ 
+    .theme-btn {
+      margin-top: 1rem; width: 100%;
+      padding: 0.55rem; border-radius: var(--radius);
+      background: var(--card); border: 1px solid var(--border);
+      color: var(--muted); cursor: pointer; font-family: 'Sora', sans-serif;
+      font-size: 0.75rem; letter-spacing: 0.04em;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .theme-btn:hover { border-color: var(--accent); color: var(--accent); }
+ 
+    /* ── MAIN ── */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1; padding: 4rem 4rem;
+      width: calc(100% - var(--sidebar-w));
+      max-width: none;
+    }
+ 
+    /* ── SECTIONS ── */
+    .section { margin-bottom: 6rem; }
+    .section-label {
+      display: flex; align-items: center; gap: 0.8rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem; color: var(--accent);
+      letter-spacing: 0.22em; text-transform: uppercase;
+      margin-bottom: 1.2rem;
+    }
+    .section-label::after {
+      content: ''; flex: 0 0 40px; height: 1px;
+      background: var(--accent); opacity: 0.5;
+    }
+    .section-title {
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      font-weight: 700; line-height: 1.2; margin-bottom: 2rem;
+    }
+ 
+    /* ── HERO ── */
+    #presentation {
+      position: relative;
+      padding: 4rem 3.5rem 3rem;
+      border-radius: 30px;
+      background-image:
+        linear-gradient(180deg, rgba(14,17,23,0.92) 0%, rgba(14,17,23,0.68) 30%, rgba(14,17,23,0.95) 100%),
+        url('images/photo-1623121608391-5ddbfa78428e.webp');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      transition: background 0.8s ease;
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 28px 80px rgba(0,0,0,0.25);
+      overflow: hidden;
+    }
+    #presentation::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top right, rgba(74,222,128,0.16), transparent 40%);
+      pointer-events: none;
+    }
+    .hero-profile-images {
+      display: flex; align-items: center; gap: 0.9rem;
+      flex-wrap: wrap;
+    }
+    .hero-profile-images img {
+      width: 90px; height: 90px;
+      object-fit: cover; border-radius: 22px;
+      border: 2px solid rgba(255,255,255,0.16);
+      box-shadow: 0 18px 35px rgba(0,0,0,0.18);
+    }
+    #presentation > .section-label,
+    #presentation .hero-greeting,
+    #presentation .hero-title,
+    #presentation .hero-desc,
+    #presentation .hero-btns,
+    #presentation .hero-note,
+    #presentation .hero-badges {
+      position: relative;
+      z-index: 1;
+    }
+    #presentation .hero-greeting {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem; color: var(--accent); margin-bottom: 1rem;
+      letter-spacing: 0.08em;
+    }
+    #presentation .hero-title {
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      font-weight: 800; line-height: 1.05; margin-bottom: 1rem;
+      text-shadow: 0 24px 60px rgba(0,0,0,0.28);
+    }
+    #presentation .hero-title span { color: var(--accent); }
+    #presentation .hero-desc {
+      color: rgba(226,232,240,0.9); max-width: 560px; margin-bottom: 1.5rem;
+      font-size: 1rem;
+    }
+    .hero-note {
+      max-width: 560px; margin-bottom: 1.8rem;
+      color: rgba(226,232,240,0.75); font-size: 0.95rem;
+    }
+    .hero-badges {
+      display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.5rem;
+    }
+    .hero-profile-card {
+      display: flex; align-items: center; gap: 1.4rem;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
+      padding: 1.4rem 1.5rem;
+      border-radius: 28px;
+      margin-top: 1.8rem;
+      box-shadow: 0 20px 48px rgba(0,0,0,0.2);
+    }
+    .hero-profile-images {
+      display: flex; align-items: center; gap: 1rem;
+      flex-wrap: wrap;
+      position: relative;
+    }
+    .hero-profile-images img {
+      width: 140px; height: 140px;
+      object-fit: cover; border-radius: 26px;
+      border: 2px solid rgba(255,255,255,0.18);
+      box-shadow: 0 14px 35px rgba(0,0,0,0.22);
+      flex-shrink: 0;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .hero-profile-images img:hover {
+      transform: scale(1.05);
+      box-shadow: 0 18px 45px rgba(0,0,0,0.3);
+    }
+    .click-arrow {
+      position: absolute;
+      top: -50px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+      animation: bounce 2s infinite, fadeIn 1s ease 3s forwards;
+      pointer-events: none;
+      opacity: 0;
+    }
+    .click-arrow span {
+      font-size: 2rem;
+      animation: pulse 1.5s infinite;
+    }
+    .arrow-text {
+      background: rgba(74,222,128,0.9);
+      color: #0e1117;
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(74,222,128,0.3);
+    }
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+      40% { transform: translateX(-50%) translateY(-10px); }
+      60% { transform: translateX(-50%) translateY(-5px); }
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+    .hero-profile-info {
+      display: flex; flex-direction: column; gap: 0.4rem;
+      color: rgba(226,232,240,0.95);
+    }
+    .hero-profile-info .profile-name {
+      font-size: 1.15rem; font-weight: 800;
+    }
+    .hero-profile-info .profile-subtitle {
+      color: rgba(226,232,240,0.82); font-size: 0.95rem;
+    }
+    .hero-profile-info .profile-detail {
+      color: rgba(226,232,240,0.72); font-size: 0.9rem;
+      line-height: 1.55;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      padding: 0.65rem 1rem; border-radius: 999px;
+      background: rgba(74,222,128,0.12); color: var(--accent);
+      border: 1px solid rgba(74,222,128,0.18);
+      font-size: 0.78rem; font-family: 'JetBrains Mono', monospace;
+    }
+    .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.85rem 1.9rem; border-radius: var(--radius);
+      font-family: 'Sora', sans-serif; font-weight: 700;
+      font-size: 0.88rem; cursor: pointer; text-decoration: none;
+      transition: transform 0.18s, box-shadow 0.18s, background 0.18s;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-solid {
+      background: var(--accent); color: #0e1117;
+      box-shadow: 0 4px 20px rgba(74,222,128,0.25);
+    }
+    .btn-solid:hover { box-shadow: 0 8px 30px rgba(74,222,128,0.4); }
+    .btn-outline {
+      border: 1px solid var(--border); color: var(--text);
+      background: var(--card);
+    }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+ 
+    /* STATS */
+    .stats-row {
+      display: flex; gap: 1px; background: var(--border);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      overflow: hidden; margin-top: 2.5rem;
+    }
+    .stat {
+      flex: 1; background: var(--surface); padding: 1.5rem 1.2rem;
+      text-align: center;
+    }
+    .stat-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.8rem; font-weight: 700; color: var(--accent);
+      display: block;
+    }
+    .stat-lbl { font-size: 0.72rem; color: var(--muted); }
+ 
+    /* ── ABOUT ── */
+    .about-text p { color: var(--muted); margin-bottom: 1rem; font-size: 0.95rem; }
+    .about-text strong { color: var(--text); }
+    .tags-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.5rem; }
+    .tag {
+      padding: 0.35rem 0.85rem; border-radius: 99px;
+      border: 1px solid var(--border); font-size: 0.72rem;
+      color: var(--muted); background: var(--card);
+    }
+    .highlight-cards {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 0.8rem; margin-top: 2rem;
+    }
+    .hcard {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.1rem 1.2rem;
+      display: flex; align-items: flex-start; gap: 0.8rem;
+      transition: border-color 0.2s;
+    }
+    .hcard:hover { border-color: var(--accent); }
+    .hcard-icon { font-size: 1.3rem; }
+    .hcard-label { font-size: 0.68rem; color: var(--muted); margin-bottom: 0.1rem; }
+    .hcard-val { font-size: 0.88rem; font-weight: 600; color: var(--text); }
+ 
+    /* ── SKILLS ── */
+    .skills-category { margin-bottom: 2.5rem; }
+    .cat-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.12em;
+      margin-bottom: 1rem; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .skills-list { display: flex; flex-direction: column; gap: 0.7rem; }
+    .skill-row {
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .skill-name-col { width: 130px; font-size: 0.84rem; color: var(--text); flex-shrink: 0; }
+    .skill-level {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem; padding: 0.2rem 0.6rem;
+      border-radius: 99px; border: 1px solid;
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .level-avance { color: var(--accent); border-color: rgba(74,222,128,0.3); background: var(--accent-dim); }
+    .level-inter { color: var(--accent2); border-color: rgba(96,165,250,0.3); background: rgba(96,165,250,0.08); }
+    .level-debut { color: #fb923c; border-color: rgba(251,146,60,0.3); background: rgba(251,146,60,0.08); }
+    .skill-bar-wrap { flex: 1; height: 4px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .skill-bar-inner {
+      height: 100%; border-radius: 99px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      width: 0; transition: width 1.2s cubic-bezier(.25,.46,.45,.94) 0.2s;
+    }
+    .skill-row.animated .skill-bar-inner { width: var(--w); }
+ 
+    /* ── PROJECTS ── */
+    .filter-row {
+      display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 2rem;
+    }
+    .filter-btn {
+      padding: 0.45rem 1.1rem; border-radius: 99px;
+      border: 1px solid var(--border); background: var(--card);
+      color: var(--muted); font-size: 0.76rem; cursor: pointer;
+      font-family: 'Sora', sans-serif;
+      transition: all 0.2s;
+    }
+    .filter-btn:hover, .filter-btn.active {
+      border-color: var(--accent); color: var(--accent);
+      background: var(--accent-dim);
+    }
+    .projects-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.2rem;
+    }
+    .project-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .project-card:hover { border-color: var(--accent); transform: translateY(-4px); }
+    .project-img {
+      width: 100%; height: 170px; object-fit: cover;
+      filter: brightness(0.8); transition: filter 0.4s;
+    }
+    .project-card:hover .project-img { filter: brightness(1); }
+    .project-body { padding: 1.4rem; }
+    .project-meta {
+      display: flex; align-items: center; gap: 0.5rem;
+      margin-bottom: 0.6rem;
+    }
+    .project-year {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem; color: var(--muted);
+    }
+    .project-cat-badge {
+      font-size: 0.65rem; padding: 0.15rem 0.55rem;
+      border-radius: 99px; background: var(--accent-dim);
+      color: var(--accent); border: 1px solid rgba(74,222,128,0.2);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .project-title { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .project-desc { color: var(--muted); font-size: 0.82rem; line-height: 1.6; margin-bottom: 1rem; }
+    .project-techs { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1rem; }
+    .tech-badge {
+      font-size: 0.65rem; padding: 0.18rem 0.6rem;
+      border-radius: 4px; background: var(--card);
+      border: 1px solid var(--border); color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .project-link {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      font-size: 0.76rem; color: var(--accent); text-decoration: none;
+      font-family: 'JetBrains Mono', monospace;
+      transition: gap 0.2s;
+    }
+    .project-link:hover { gap: 0.7rem; }
+ 
+    /* ── SERVICES ── */
+    .services-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+    .service-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.8rem;
+      transition: border-color 0.3s, background 0.3s;
+    }
+    .service-card:hover { border-color: var(--accent); background: var(--card); }
+    .service-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem; color: var(--accent); margin-bottom: 1rem; opacity: 0.6;
+    }
+    .service-icon { font-size: 1.8rem; margin-bottom: 0.8rem; display: block; }
+    .service-name { font-size: 1rem; font-weight: 700; margin-bottom: 0.6rem; }
+    .service-desc { color: var(--muted); font-size: 0.82rem; line-height: 1.65; margin-bottom: 1rem; }
+    .service-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .stag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem; padding: 0.2rem 0.6rem;
+      border-radius: 4px; color: var(--accent2);
+      background: rgba(96,165,250,0.08); border: 1px solid rgba(96,165,250,0.2);
+    }
+ 
+    /* ── CONTACT ── */
+    .contact-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 4rem; }
+    .contact-intro { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
+    .contact-methods { display: flex; flex-direction: column; gap: 0.7rem; }
+    .contact-method {
+      display: flex; align-items: center; gap: 0.9rem;
+      padding: 0.9rem 1.1rem; border-radius: var(--radius);
+      background: var(--surface); border: 1px solid var(--border);
+      text-decoration: none; color: var(--text);
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .contact-method:hover { border-color: var(--accent); background: var(--accent-dim); }
+    .cm-icon { font-size: 1.1rem; color: var(--accent); }
+    .cm-text { font-size: 0.84rem; }
+ 
+    .form-group { margin-bottom: 1rem; }
+    .form-label { display: block; font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.4rem; }
+    .form-input, .form-textarea {
+      width: 100%; background: var(--surface); border: 1px solid var(--border);
+      color: var(--text); padding: 0.8rem 1rem;
+      font-family: 'Sora', sans-serif; font-size: 0.88rem;
+      border-radius: var(--radius); outline: none; resize: none;
+      transition: border-color 0.2s;
+    }
+    .form-input:focus, .form-textarea:focus { border-color: var(--accent); }
+    .form-textarea { min-height: 120px; }
+    .form-submit {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.85rem 2rem; background: var(--accent); color: #0e1117;
+      border: none; border-radius: var(--radius);
+      font-family: 'Sora', sans-serif; font-weight: 700; font-size: 0.85rem;
+      cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .form-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(74,222,128,0.35); }
+    .form-submit:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
+    .form-status {
+      margin-top: 0.8rem; padding: 0.85rem 1rem; border-radius: var(--radius);
+      font-size: 0.84rem; display: none;
+    }
+    .form-status.visible { display: block; }
+    .form-status.success { background: var(--accent-dim); border: 1px solid rgba(74,222,128,0.3); color: var(--accent); }
+    .form-status.error { background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.3); color: #fca5a5; }
+    .spinner { width: 14px; height: 14px; border: 2px solid rgba(0,0,0,0.2); border-top-color: #0e1117; border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
+    .form-submit.loading .spinner { display: block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+ 
+    /* ── FOOTER ── */
+    footer {
+      margin-left: var(--sidebar-w); padding: 1.5rem 5rem;
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 0.75rem; color: var(--muted);
+    }
+ 
+    /* ── HAMBURGER (mobile) ── */
+    .hamburger-btn {
+      display: none; position: fixed; top: 1rem; right: 1rem;
+      z-index: 200; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; width: 40px; height: 40px; cursor: pointer;
+      flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+    }
+    .hamburger-btn span { display: block; width: 18px; height: 2px; background: var(--text); border-radius: 2px; transition: 0.3s; }
+ 
+    /* ── REVEAL ── */
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+ 
+    /* ── MODAL ── */
+    .modal {
+      display: none; position: fixed; z-index: 1000;
+      left: 0; top: 0; width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.85);
+      backdrop-filter: blur(8px);
+    }
+    .modal-content {
+      position: relative; margin: auto; padding: 0;
+      width: 90%; max-width: 600px; max-height: 80vh;
+      animation: modalFadeIn 0.3s ease;
+    }
+    .modal-content img {
+      width: 100%; height: auto; border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+    .close-modal {
+      position: absolute; top: -40px; right: 0;
+      color: #fff; font-size: 28px; font-weight: bold;
+      cursor: pointer; transition: color 0.2s;
+    }
+    .close-modal:hover { color: var(--accent); }
+    @keyframes modalFadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .main, footer { margin-left: 0; }
+      .main { padding: 5rem 2rem 3rem; }
+      footer { padding: 1.5rem 2rem; }
+      #presentation { padding: 3.5rem 1.8rem 2.5rem; border-radius: 24px; }
+      .hero-title { font-size: clamp(2.2rem, 8vw, 3.5rem); }
+      .hero-profile-card { flex-wrap: wrap; justify-content: space-between; }
+      .hero-profile-card img { width: 100px; height: 100px; }
+      .hero-btns { gap: 0.7rem; }
+      .hero-btns .btn { flex: 1; justify-content: center; }
+      .hamburger-btn { display: flex; }
+      .contact-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      .projects-grid { grid-template-columns: 1fr; }
+      .services-grid { grid-template-columns: 1fr; }
+      .stats-row { flex-direction: column; }
+      .highlight-cards { grid-template-columns: 1fr; }
+      #presentation { padding: 3rem 1.2rem 2rem; }
+      .section { margin-bottom: 4.5rem; }
+      .hero-btns { flex-direction: column; }
+      .hero-profile-card { flex-direction: column; gap: 1rem; padding: 1rem; }
+      .hero-profile-images { justify-content: center; }
+      .hero-profile-images img { width: 100%; max-width: 220px; height: auto; margin: 0 auto; }
+      .click-arrow { display: none; }
+      .sidebar-avatar { width: 80px; height: 80px; }
+    }
+  </style>
+</head>
+<body>
+ 
+  <button class="hamburger-btn" id="hamburgerBtn" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+ 
+  <div class="layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-profile">
+        <img class="sidebar-avatar" src="images/image_1_1774514633521.jpg" alt="Abdoulaye Nouridine" onerror="this.src='https://ui-avatars.com/api/?name=Abdoulaye+Nouridine&background=4ade80&color=0e1117&size=90&bold=true'"/>
+        <div class="sidebar-name">Abdoulaye Nouridine</div>
+        <div class="sidebar-role">Développeur Web & Mobile</div>
+        <div class="sidebar-location">📍 Afrique / Remote</div>
+        <div class="availability"><span class="avail-dot"></span>Disponible</div>
+      </div>
+ 
+      <nav class="sidebar-nav">
+        <a href="#presentation" class="nav-item active"><span class="nav-icon">🏠</span> Présentation</a>
+        <a href="#about" class="nav-item"><span class="nav-icon">👤</span> À Propos</a>
+        <a href="#competences" class="nav-item"><span class="nav-icon">⚡</span> Compétences</a>
+        <a href="#services" class="nav-item"><span class="nav-icon">🛠️</span> Services</a>
+        <a href="#projets" class="nav-item"><span class="nav-icon">💼</span> Projets</a>
+        <a href="#contact" class="nav-item"><span class="nav-icon">✉️</span> Contact</a>
+      </nav>
+ 
+      <div class="sidebar-socials">
+        <a href="https://github.com/nouridineabdoulaye55-source" target="_blank" class="social-link" title="GitHub">🐙</a>
+        <a href="https://wa.me/22893734052" target="_blank" class="social-link" title="WhatsApp">💬</a>
+        <a href="mailto:abdoulaye@email.com" class="social-link" title="Email">📧</a>
+        <a href="#" target="_blank" class="social-link" title="LinkedIn">🔗</a>
+      </div>
+      <button class="theme-btn" id="themeBtn">☀️ Changer le thème</button>
+    </aside>
+ 
+    <!-- MAIN CONTENT -->
+    <main class="main">
+ 
+      <!-- PRÉSENTATION -->
+      <section class="section" id="presentation">
+        <div class="section-label">Portfolio professionnel</div>
+        <p class="hero-greeting">// Bonjour, je suis</p>
+        <h1 class="hero-title">Abdoulaye<br><span>Nouridine</span></h1>
+        <p class="hero-desc">
+          Développeur Web & Mobile passionné, je crée des expériences numériques modernes, performantes et alignées aux besoins des entreprises ambitieuses d'Afrique et à l'international.
+        </p>
+        <div class="hero-profile-card reveal">
+          <div class="hero-profile-images">
+            <img src="images/image_1_1774514633521.jpg" alt="Portrait Abdoulaye Nouridine" />
+            <img src="images/image_1_1774442275137.jpg" alt="Portrait professionnel Abdoulaye Nouridine" />
+            <div class="click-arrow">
+              <span>👆</span>
+              <div class="arrow-text">Cliquez pour agrandir</div>
+            </div>
+          </div>
+          <div class="hero-profile-info">
+            <div class="profile-name">Abdoulaye Nouridine</div>
+            <div class="profile-subtitle">Développeur Web & Mobile</div>
+            <div class="profile-detail">Photo personnelle et portrait professionnel mis en valeur pour renforcer la confiance des recruteurs.</div>
+          </div>
+        </div>
+        <div class="hero-btns">
+          <a href="#projets" class="btn btn-solid">Mes projets →</a>
+          <a href="#contact" class="btn btn-outline">Me contacter</a>
+        </div>
+        <p class="hero-note reveal">Disponible immédiatement pour des missions et des opportunités qui demandent une expérience web & mobile engagée, pensée pour le marché africain et international.</p>
+        <div class="hero-badges reveal">
+          <span class="hero-badge">React Native</span>
+          <span class="hero-badge">API & Backend</span>
+          <span class="hero-badge">UI/UX Design</span>
+        </div>
+        <div class="stats-row reveal">
+          <div class="stat"><span class="stat-num" data-target="1" data-suffix="+">0+</span><div class="stat-lbl">An d'expérience</div></div>
+          <div class="stat"><span class="stat-num" data-target="10" data-suffix="+">0+</span><div class="stat-lbl">Projets livrés</div></div>
+          <div class="stat"><span class="stat-num" data-target="100" data-suffix="%">0%</span><div class="stat-lbl">Satisfaction client</div></div>
+          <div class="stat"><span class="stat-num" data-target="2" data-suffix="">0</span><div class="stat-lbl">Plateformes</div></div>
+        </div>
+      </section>
+ 
+      <!-- À PROPOS -->
+      <section class="section" id="about">
+        <div class="section-label">À Propos</div>
+        <h2 class="section-title">Créer, innover,<br>transformer.</h2>
+        <div class="about-text reveal">
+          <p>Bonjour 🖐️ Je m'appelle <strong>Abdoulaye Nouridine</strong>, développeur web et mobile basé en Afrique. Depuis <strong>2024</strong>, je me consacre à la création de solutions digitales modernes qui répondent aux besoins réels des entreprises.</p>
+          <p>Mon approche combine <strong>technique rigoureuse</strong> et <strong>sens du design</strong> pour livrer des produits qui non seulement fonctionnent parfaitement, mais marquent aussi les esprits.</p>
+          <p>Que ce soit un site vitrine, une application mobile ou une plateforme e-commerce, je m'engage à fournir un travail de qualité qui fait la différence. Toujours curieux, je reste en veille sur les dernières tendances technologiques.</p>
+        </div>
+        <div class="tags-row reveal">
+          <span class="tag">Curiosité</span>
+          <span class="tag">Persévérant</span>
+          <span class="tag">Esprit d'équipe</span>
+          <span class="tag">Autonomie</span>
+          <span class="tag">Apprentissage continu</span>
+          <span class="tag">Réactif</span>
+        </div>
+        <div class="highlight-cards reveal">
+          <div class="hcard"><span class="hcard-icon">🗓️</span><div><div class="hcard-label">Depuis</div><div class="hcard-val">2024</div></div></div>
+          <div class="hcard"><span class="hcard-icon">📍</span><div><div class="hcard-label">Localisation</div><div class="hcard-val">Afrique / Remote</div></div></div>
+          <div class="hcard"><span class="hcard-icon">💻</span><div><div class="hcard-label">Spécialité</div><div class="hcard-val">Web & Mobile</div></div></div>
+          <div class="hcard"><span class="hcard-icon">🚀</span><div><div class="hcard-label">Disponibilité</div><div class="hcard-val">Immédiate</div></div></div>
+        </div>
+      </section>
+ 
+      <!-- COMPÉTENCES -->
+      <section class="section" id="competences">
+        <div class="section-label">Technologies</div>
+        <h2 class="section-title">Compétences</h2>
+        <p style="color:var(--muted); margin-bottom:2rem; font-size:0.9rem;">
+          Ces compétences ont été acquises à travers mes formations et mes projets personnels. Je reste en constante évolution pour découvrir de nouvelles technologies.
+        </p>
+ 
+        <div class="skills-category reveal">
+          <div class="cat-title">Backend</div>
+          <div class="skills-list">
+            <div class="skill-row" style="--w:85%"><span class="skill-name-col">PHP</span><span class="skill-level level-avance">Avancé</span><div class="skill-bar-wrap"><div class="skill-bar-inner"></div></div></div>
+            <div class="skill-row" style="--w:80%"><span class="skill-name-col">MySQL</span><span class="skill-level level-avance">Avancé</span><div class="skill-bar-wrap"><div class="skill-bar-inner"></div></div></div>
+            <div class="skill-row" style="--w:65%"><span class="skill-name-col">REST API</span><span class="skill-level level-inter">Intermédiaire</span><div class="skill-bar-wrap"><div class="skill-bar-inner"></div></div></div>
+          </div>
+        </div>
+ 
+        <div class="skills-category reveal">
+          <div class="cat-title">Frontend</div>
+          <div class="skills-list">
+            <div class="skill-row" style="--w:90%"><span class="skill-name-col">HTML / CSS</span><span class="skill-level level-avance">Avancé</span><div class="skill-bar-wrap"><div class="skill-bar-inner"></div></div></div>
+            <div class="skill-row" style="--w:75%"><span class="skill-name-col">JavaScript</span><span class="skill-level level-avance">Avancé</span><div class="skill-bar-wrap"><div class="skill-bar-inner"></div></div></div>
+          </div>
+        </div>
+ 
+        <div class="skills-category reveal">
+          <div class="cat-title">Mobile</div>
+          <div class="skills-list">
+            <div class="skill-row" style="--w:70%"><span class="skill-name-col">React Native</span><span class="skill-level level-inter">Intermédiaire</span><div class="skill-bar-wrap"><div class="skill-bar-inner"></div></div></div>
+            <div class="skill-row" style="--w:65%"><span class="skill-name-col">Flutter</span><span class="skill-level level-inter">Intermédiaire</span><div class="skill-bar-wrap"><div class="skill-bar-inner"></div></div></div>
+          </div>
+        </div>
+ 
+        <div class="skills-category reveal">
+          <div class="cat-title">Outils & Design</div>
+          <div class="skills-list">
+            <div class="skill-row" style="--w:80%"><span class="skill-name-col">Git / GitHub</span><span class="skill-level level-avance">Avancé</span><div class="skill-bar-wrap"><div class="skill-bar-inner"></div></div></div>
+            <div class="skill-row" style="--w:75%"><span class="skill-name-col">Figma</span><span class="skill-level level-inter">Intermédiaire</span><div class="skill-bar-wrap"><div class="skill-bar-inner"></div></div></div>
+          </div>
+        </div>
+      </section>
+ 
+      <!-- SERVICES -->
+      <section class="section" id="services">
+        <div class="section-label">Ce que je fais</div>
+        <h2 class="section-title">Mes Services</h2>
+        <div class="services-grid">
+          <div class="service-card reveal">
+            <div class="service-num">01</div>
+            <span class="service-icon">🌐</span>
+            <div class="service-name">Développement Web</div>
+            <p class="service-desc">Création de sites web modernes, responsive et performants. De la landing page au projet e-commerce complet.</p>
+            <div class="service-tags"><span class="stag">PHP</span><span class="stag">HTML/CSS</span><span class="stag">JavaScript</span><span class="stag">MySQL</span></div>
+          </div>
+          <div class="service-card reveal">
+            <div class="service-num">02</div>
+            <span class="service-icon">📱</span>
+            <div class="service-name">Développement Mobile</div>
+            <p class="service-desc">Applications mobiles cross-platform pour Android et iOS. Expériences fluides et intuitives.</p>
+            <div class="service-tags"><span class="stag">React Native</span><span class="stag">Flutter</span><span class="stag">Android</span><span class="stag">iOS</span></div>
+          </div>
+          <div class="service-card reveal">
+            <div class="service-num">03</div>
+            <span class="service-icon">🛒</span>
+            <div class="service-name">E-Commerce</div>
+            <p class="service-desc">Boutiques en ligne clé-en-main avec gestion des paiements, du stock et des commandes.</p>
+            <div class="service-tags"><span class="stag">PHP</span><span class="stag">API Paiement</span><span class="stag">CMS</span></div>
+          </div>
+          <div class="service-card reveal">
+            <div class="service-num">04</div>
+            <span class="service-icon">⚡</span>
+            <div class="service-name">API & Backend</div>
+            <p class="service-desc">Développement d'APIs robustes et de systèmes back-end évolutifs. Architecture propre et sécurisée.</p>
+            <div class="service-tags"><span class="stag">PHP</span><span class="stag">REST API</span><span class="stag">MySQL</span><span class="stag">JSON</span></div>
+          </div>
+          <div class="service-card reveal">
+            <div class="service-num">05</div>
+            <span class="service-icon">🎨</span>
+            <div class="service-name">UI/UX Design</div>
+            <p class="service-desc">Interfaces visuellement attractives et ergonomiques qui convertissent et fidélisent.</p>
+            <div class="service-tags"><span class="stag">Figma</span><span class="stag">Prototypage</span><span class="stag">UI Design</span></div>
+          </div>
+          <div class="service-card reveal">
+            <div class="service-num">06</div>
+            <span class="service-icon">🔧</span>
+            <div class="service-name">Maintenance & Support</div>
+            <p class="service-desc">Suivi technique, mises à jour, corrections et optimisation de vos projets existants.</p>
+            <div class="service-tags"><span class="stag">Audit</span><span class="stag">Optimisation</span><span class="stag">Support</span></div>
+          </div>
+        </div>
+      </section>
+ 
+      <!-- PROJETS -->
+      <section class="section" id="projets">
+        <div class="section-label">Réalisations</div>
+        <h2 class="section-title">Mes Projets</h2>
+        <p style="color:var(--muted); margin-bottom:1.5rem; font-size:0.9rem;">
+          Voici une sélection de mes réalisations. Chaque projet témoigne de mon évolution et de ma curiosité en tant que développeur.
+        </p>
+        <div class="filter-row">
+          <button class="filter-btn active" data-filter="all">Tous</button>
+          <button class="filter-btn" data-filter="web">Web</button>
+          <button class="filter-btn" data-filter="mobile">Mobile</button>
+          <button class="filter-btn" data-filter="ecommerce">E-Commerce</button>
+        </div>
+        <div class="projects-grid">
+          <div class="project-card reveal" data-cat="web">
+            <img class="project-img" src="https://images.unsplash.com/photo-1547658719-da2b51169166?w=800&q=80" alt="Plateforme de Gestion"/>
+            <div class="project-body">
+              <div class="project-meta">
+                <span class="project-year">2024</span>
+                <span class="project-cat-badge">Web App</span>
+              </div>
+              <div class="project-title">Plateforme de Gestion</div>
+              <p class="project-desc">Application web complète avec authentification, tableau de bord et gestion de données en temps réel.</p>
+              <div class="project-techs"><span class="tech-badge">PHP</span><span class="tech-badge">MySQL</span><span class="tech-badge">JavaScript</span></div>
+              <a href="#" class="project-link">Voir le projet →</a>
+            </div>
+          </div>
+          <div class="project-card reveal" data-cat="ecommerce">
+            <img class="project-img" src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=800&q=80" alt="Boutique en Ligne"/>
+            <div class="project-body">
+              <div class="project-meta">
+                <span class="project-year">2024</span>
+                <span class="project-cat-badge">E-Commerce</span>
+              </div>
+              <div class="project-title">Boutique en Ligne</div>
+              <p class="project-desc">Site e-commerce avec paiement mobile money et gestion des stocks. Solution adaptée au marché africain.</p>
+              <div class="project-techs"><span class="tech-badge">PHP</span><span class="tech-badge">MySQL</span><span class="tech-badge">API Paiement</span></div>
+              <a href="https://agri-market.page.gd/index.php" target="_blank" class="project-link">Voir le projet →</a>
+            </div>
+          </div>
+          <div class="project-card reveal" data-cat="mobile">
+            <img class="project-img" src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&q=80" alt="App Mobile"/>
+            <div class="project-body">
+              <div class="project-meta">
+                <span class="project-year">2024</span>
+                <span class="project-cat-badge">Mobile</span>
+              </div>
+              <div class="project-title">Application Mobile</div>
+              <p class="project-desc">Application cross-platform pour la gestion de services avec notifications push et interface intuitive.</p>
+              <div class="project-techs"><span class="tech-badge">React Native</span><span class="tech-badge">Flutter</span></div>
+              <a href="#" class="project-link">Voir le projet →</a>
+            </div>
+          </div>
+          <div class="project-card reveal" data-cat="web">
+            <img class="project-img" src="https://images.unsplash.com/photo-1555421689-491a97ff2040?w=800&q=80" alt="Site Vitrine"/>
+            <div class="project-body">
+              <div class="project-meta">
+                <span class="project-year">2024</span>
+                <span class="project-cat-badge">Web</span>
+              </div>
+              <div class="project-title">Site Vitrine RACH</div>
+              <p class="project-desc">Développement d'un site vitrine moderne, rapide et optimisé SEO pour une entreprise locale.</p>
+              <div class="project-techs"><span class="tech-badge">HTML</span><span class="tech-badge">CSS</span><span class="tech-badge">JavaScript</span></div>
+              <a href="https://nouridineabdoulaye55-source.github.io/RACH/" target="_blank" class="project-link">Voir le projet →</a>
+            </div>
+          </div>
+        </div>
+      </section>
+ 
+      <!-- CONTACT -->
+      <section class="section" id="contact">
+        <div class="section-label">Contact</div>
+        <h2 class="section-title">Démarrons un projet</h2>
+        <div class="contact-grid">
+          <div>
+            <p class="contact-intro reveal">Vous avez une idée, un projet à développer ? Je suis disponible pour des missions freelance ou des collaborations à long terme. N'hésitez pas à me contacter !</p>
+            <div class="contact-methods reveal">
+              <a href="mailto:abdoulaye@email.com" class="contact-method"><span class="cm-icon">📧</span><span class="cm-text">abdoulaye@email.com</span></a>
+              <a href="tel:+22893734052" class="contact-method"><span class="cm-icon">📞</span><span class="cm-text">+228 93 73 40 52</span></a>
+              <a href="https://wa.me/22893734052" target="_blank" class="contact-method"><span class="cm-icon">💬</span><span class="cm-text">WhatsApp disponible</span></a>
+              <a href="https://github.com/nouridineabdoulaye55-source" target="_blank" class="contact-method"><span class="cm-icon">🐙</span><span class="cm-text">github.com/nouridineabdoulaye55-source</span></a>
+            </div>
+          </div>
+          <form id="contactForm" class="reveal" onsubmit="return false;">
+            <div class="form-group"><label class="form-label">Votre nom</label><input type="text" class="form-input" id="fieldName" placeholder="Jean Dupont" required/></div>
+            <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" id="fieldEmail" placeholder="jean@email.com" required/></div>
+            <div class="form-group"><label class="form-label">Sujet</label><input type="text" class="form-input" id="fieldSubject" placeholder="Développement d'une application..." required/></div>
+            <div class="form-group"><label class="form-label">Message</label><textarea class="form-textarea" id="fieldMessage" placeholder="Décrivez votre projet..." required></textarea></div>
+            <div class="form-status" id="formStatus"></div>
+            <button type="button" class="form-submit" id="submitBtn" onclick="handleSubmit()">
+              <div class="spinner"></div>
+              <span class="btn-text">Envoyer le message →</span>
+            </button>
+          </form>
+        </div>
+      </section>
+ 
+    </main>
+  </div>
+ 
+  <!-- MODAL FOR IMAGES -->
+  <div id="imageModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <img id="modalImage" src="" alt="Image agrandie" />
+    </div>
+  </div>
+    <span>© 2025 Abdoulaye Nouridine — Tous droits réservés.</span>
+    <div style="display:flex;gap:1.5rem;">
+      <a href="https://github.com/nouridineabdoulaye55-source" target="_blank" style="color:var(--muted);text-decoration:none;">GitHub</a>
+      <a href="#" target="_blank" style="color:var(--muted);text-decoration:none;">LinkedIn</a>
+      <a href="https://wa.me/22893734052" target="_blank" style="color:var(--muted);text-decoration:none;">WhatsApp</a>
+    </div>
+  </footer>
+ 
+  <script>
+    // ── THEME ──
+    const themeBtn = document.getElementById('themeBtn');
+    themeBtn.addEventListener('click', () => {
+      const cur = document.documentElement.getAttribute('data-theme');
+      document.documentElement.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
+      themeBtn.textContent = cur === 'dark' ? '🌙 Changer le thème' : '☀️ Changer le thème';
+    });
+ 
+    // ── HAMBURGER ──
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const sidebar = document.getElementById('sidebar');
+    hamburgerBtn.addEventListener('click', () => sidebar.classList.toggle('open'));
+    document.addEventListener('click', e => {
+      if (!sidebar.contains(e.target) && !hamburgerBtn.contains(e.target)) sidebar.classList.remove('open');
+    });
+ 
+    // ── NAV ACTIVE ──
+    const navItems = document.querySelectorAll('.nav-item');
+    const sections = document.querySelectorAll('section[id]');
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(s => { if (window.scrollY >= s.offsetTop - 100) current = s.id; });
+      navItems.forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+      });
+    });
+    navItems.forEach(a => a.addEventListener('click', () => sidebar.classList.remove('open')));
+ 
+    // ── HERO BACKGROUND SLIDESHOW ──
+    const heroSection = document.getElementById('presentation');
+    const heroBackgrounds = [
+      'images/photo-1623121608391-5ddbfa78428e.webp',
+      'images/photo-1573166364971-d70fb4913897.webp',
+      'images/photo-1565688461878-f329a0226094.webp'
+    ];
+    let heroBgIndex = 0;
+    setInterval(() => {
+      heroBgIndex = (heroBgIndex + 1) % heroBackgrounds.length;
+      heroSection.style.backgroundImage = `linear-gradient(180deg, rgba(14,17,23,0.92) 0%, rgba(14,17,23,0.68) 30%, rgba(14,17,23,0.95) 100%), url('${heroBackgrounds[heroBgIndex]}')`;
+    }, 2000);
+ 
+    // ── REVEAL ──
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+ 
+    // ── SKILL BARS ──
+    const skillObserver = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.querySelectorAll('.skill-row').forEach(r => r.classList.add('animated'));
+          skillObserver.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.2 });
+    document.querySelectorAll('.skills-category').forEach(el => skillObserver.observe(el));
+ 
+    // ── COUNTERS ──
+    function animCount(el, target, suffix) {
+      let s = 0;
+      const dur = 1600;
+      const step = ts => {
+        if (!s) s = ts;
+        const p = Math.min((ts - s) / dur, 1);
+        const e = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.floor(e * target) + suffix;
+        if (p < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }
+    const statsObs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.querySelectorAll('.stat-num').forEach(el => {
+            animCount(el, +el.dataset.target, el.dataset.suffix);
+          });
+          statsObs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.3 });
+    document.querySelector('.stats-row') && statsObs.observe(document.querySelector('.stats-row'));
+ 
+    // ── PROJECT FILTER ──
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const f = btn.dataset.filter;
+        document.querySelectorAll('.project-card').forEach(c => {
+          c.style.display = (f === 'all' || c.dataset.cat === f) ? '' : 'none';
+        });
+      });
+    });
+ 
+    // ── CONTACT FORM ──
+    async function handleSubmit() {
+      const name = document.getElementById('fieldName').value.trim();
+      const email = document.getElementById('fieldEmail').value.trim();
+      const subject = document.getElementById('fieldSubject').value.trim();
+      const message = document.getElementById('fieldMessage').value.trim();
+      const status = document.getElementById('formStatus');
+      const btn = document.getElementById('submitBtn');
+      if (!name || !email || !subject || !message) { showStatus('Veuillez remplir tous les champs.', 'error'); return; }
+      btn.disabled = true; btn.classList.add('loading');
+      btn.querySelector('.btn-text').textContent = 'Envoi en cours…';
+      status.className = 'form-status'; status.style.display = 'none';
+      try {
+        const fd = new FormData();
+        fd.append('access_key', '77236ab6-8bb7-4efd-9814-dbe23435fd89');
+        fd.append('name', name); fd.append('email', email);
+        fd.append('subject', subject); fd.append('message', message);
+        const res = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: fd });
+        const result = await res.json();
+        if (result.success) {
+          showStatus('Message envoyé avec succès ! Merci de m\'avoir contacté.', 'success');
+          document.getElementById('contactForm').reset();
+          btn.querySelector('.btn-text').textContent = 'Envoyé ✓';
+          setTimeout(() => { btn.querySelector('.btn-text').textContent = 'Envoyer le message →'; }, 4000);
+        } else throw new Error(result.message);
+      } catch(err) {
+        showStatus('Une erreur est survenue. Veuillez réessayer ou me contacter directement.', 'error');
+        btn.querySelector('.btn-text').textContent = 'Envoyer le message →';
+      } finally { btn.disabled = false; btn.classList.remove('loading'); }
+    }
+    function showStatus(msg, type) {
+      const s = document.getElementById('formStatus');
+      s.textContent = msg; s.className = `form-status ${type} visible`;
+    }
+
+    // ── IMAGE MODAL ──
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImage');
+    const closeModal = document.querySelector('.close-modal');
+
+    document.querySelectorAll('.hero-profile-images img').forEach(img => {
+      img.addEventListener('click', () => {
+        modal.style.display = 'block';
+        modalImg.src = img.src;
+        modalImg.alt = img.alt;
+      });
+    });
+
+    closeModal.addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+</html>

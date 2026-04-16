@@ -2,6 +2,7 @@
 <html lang="fr" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="description" content="Portfolio d'Abdoulaye Nouridine, développeur web et mobile passionné. Découvrez mes projets, compétences et services en développement d'applications modernes." />
   <meta name="keywords" content="développeur web, développeur mobile, React Native, portfolio, Abdoulaye Nouridine" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👨‍💻</text></svg>">
@@ -595,7 +596,10 @@
     /* ── REVEAL ── */
     .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
     .reveal.visible { opacity: 1; transform: translateY(0); }
- 
+    
+    /* Ensure mobile safety */
+    html, body { width: 100%; height: 100%; }
+    
     /* ── MODAL ── */
     .modal {
       display: none; position: fixed; z-index: 1000;
@@ -667,8 +671,11 @@
         pointer-events: none;
         box-shadow: none;
         z-index: 2000;
-        width: min(280px, 80vw);
+        width: min(280px, 85vw);
         transition: left 0.35s cubic-bezier(.77,0,.18,1), opacity 0.3s ease, box-shadow 0.35s;
+        max-height: 100vh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
       }
       /* Sidebar ouverte via JS (classe .open) */
       .sidebar.open {
@@ -1166,78 +1173,115 @@
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebarOverlay');
     const navItems = document.querySelectorAll('.nav-item');
- 
+
     function isMobile() {
       return window.innerWidth <= 900;
     }
- 
+
     function openSidebar() {
+      if (!sidebar) return;
       sidebar.classList.add('open');
       sidebar.setAttribute('aria-hidden', 'false');
-      hamburgerBtn.classList.add('active');
-      hamburgerBtn.setAttribute('aria-expanded', 'true');
-      overlay.classList.add('visible');
+      if (hamburgerBtn) {
+        hamburgerBtn.classList.add('active');
+        hamburgerBtn.setAttribute('aria-expanded', 'true');
+      }
+      if (overlay) overlay.classList.add('visible');
       document.body.style.overflow = 'hidden'; // empêche le scroll du fond
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
     }
- 
+
     function closeSidebar() {
+      if (!sidebar) return;
       sidebar.classList.remove('open');
       sidebar.setAttribute('aria-hidden', 'true');
-      hamburgerBtn.classList.remove('active');
-      hamburgerBtn.setAttribute('aria-expanded', 'false');
-      overlay.classList.remove('visible');
+      if (hamburgerBtn) {
+        hamburgerBtn.classList.remove('active');
+        hamburgerBtn.setAttribute('aria-expanded', 'false');
+      }
+      if (overlay) overlay.classList.remove('visible');
       document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
     }
- 
+
     // Gestion desktop vs mobile au chargement et au resize
     function handleResize() {
       if (!isMobile()) {
         // Desktop : sidebar toujours visible, pas d'overlay
-        sidebar.classList.remove('open'); // la classe open n'est pas nécessaire en desktop (CSS gère via media query)
-        sidebar.setAttribute('aria-hidden', 'false');
-        overlay.classList.remove('visible');
+        if (sidebar) {
+          sidebar.classList.remove('open');
+          sidebar.setAttribute('aria-hidden', 'false');
+        }
+        if (overlay) overlay.classList.remove('visible');
         document.body.style.overflow = '';
-        hamburgerBtn.classList.remove('active');
+        document.body.style.position = '';
+        document.body.style.width = '';
+        if (hamburgerBtn) hamburgerBtn.classList.remove('active');
       } else {
-        // Mobile : ferme si on passe en mobile
-        if (sidebar.classList.contains('open')) {
-          // garde ouverte si déjà ouverte
-        } else {
+        // Mobile : garde l'état précédent
+        if (sidebar && !sidebar.classList.contains('open')) {
           sidebar.setAttribute('aria-hidden', 'true');
         }
       }
     }
  
     // Init
-    handleResize();
-    window.addEventListener('resize', handleResize);
- 
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        handleResize();
+        window.addEventListener('resize', handleResize);
+      });
+    } else {
+      handleResize();
+      window.addEventListener('resize', handleResize);
+    }
+
     // Clic hamburger
-    hamburgerBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (sidebar.classList.contains('open')) {
-        closeSidebar();
-      } else {
-        openSidebar();
-      }
-    });
- 
+    if (hamburgerBtn) {
+      hamburgerBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (sidebar && sidebar.classList.contains('open')) {
+          closeSidebar();
+        } else {
+          openSidebar();
+        }
+      });
+    }
+
     // Clic sur l'overlay = fermer
-    overlay.addEventListener('click', closeSidebar);
- 
+    if (overlay) {
+      overlay.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeSidebar();
+      });
+    }
+
     // Fermer au clic sur un lien nav (mobile)
     navItems.forEach(a => {
-      a.addEventListener('click', () => {
-        if (isMobile()) closeSidebar();
+      a.addEventListener('click', (e) => {
+        if (isMobile() && sidebar && sidebar.classList.contains('open')) {
+          closeSidebar();
+        }
       });
     });
- 
+
     // Fermer avec Escape
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && sidebar.classList.contains('open')) {
+      if (e.key === 'Escape' && sidebar && sidebar.classList.contains('open')) {
         closeSidebar();
       }
     });
+ 
+    // Fermer au clic en dehors de la sidebar
+    document.addEventListener('click', (e) => {
+      if (isMobile() && sidebar && sidebar.classList.contains('open')) {
+        if (!sidebar.contains(e.target) && !hamburgerBtn.contains(e.target)) {
+          closeSidebar();
+        }
+      }
+    }, { passive: true });
  
     // ── NAV ACTIVE (scroll spy) ──
     const sections = document.querySelectorAll('section[id]');

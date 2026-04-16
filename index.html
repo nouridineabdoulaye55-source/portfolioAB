@@ -57,7 +57,7 @@
       padding: 2.5rem 1.8rem;
       z-index: 1000;
       overflow-y: auto;
-      transition: left 0.35s cubic-bezier(.77,0,.18,1), transform 0.35s cubic-bezier(.77,0,.18,1);
+      transition: left 0.35s cubic-bezier(.77,0,.18,1), opacity 0.3s ease, box-shadow 0.35s;
     }
  
     .sidebar-profile { text-align: center; margin-bottom: 2.2rem; }
@@ -551,12 +551,46 @@
  
     /* ── HAMBURGER (mobile) ── */
     .hamburger-btn {
-      display: none; position: fixed; top: 1rem; right: 1rem;
-      z-index: 1100; background: var(--surface); border: 1px solid var(--border);
-      border-radius: 8px; width: 40px; height: 40px; cursor: pointer;
-      flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+      display: none;
+      position: fixed; top: 1rem; right: 1rem;
+      z-index: 1100;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      width: 42px; height: 42px;
+      cursor: pointer;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: border-color 0.2s, background 0.2s;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
     }
-    .hamburger-btn span { display: block; width: 18px; height: 2px; background: var(--text); border-radius: 2px; transition: 0.3s; }
+    .hamburger-btn:hover { border-color: var(--accent); background: var(--accent-dim); }
+    .hamburger-btn span {
+      display: block; width: 18px; height: 2px;
+      background: var(--text); border-radius: 2px;
+      transition: transform 0.3s, opacity 0.3s;
+    }
+    /* Hamburger → X quand sidebar ouverte */
+    .hamburger-btn.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger-btn.active span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .hamburger-btn.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+ 
+    /* Overlay backdrop mobile */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(2px);
+      z-index: 999;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .sidebar-overlay.visible {
+      opacity: 1;
+    }
  
     /* ── REVEAL ── */
     .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
@@ -587,7 +621,7 @@
       position: absolute; top: -40px; right: 0;
       color: #fff; font-size: 28px; font-weight: bold;
       cursor: pointer; transition: color 0.2s;
-      background: no-repeat; border-radius: 50%; width: 40px; height: 40px;
+      background: none; border-radius: 50%; width: 40px; height: 40px;
       display: flex; align-items: center; justify-content: center;
       border: none; padding: 0;
       z-index: 1001;
@@ -614,38 +648,64 @@
       border-top: 4px solid var(--accent); border-radius: 50%;
       animation: spin 1s linear infinite;
     }
-
+ 
     /* ── RESPONSIVE ── */
     @media (max-width: 1200px) {
-      --sidebar-w: 260px;
       .main { padding: 3rem 3rem; }
       .projects-grid { grid-template-columns: repeat(2, 1fr); }
       .services-grid { grid-template-columns: repeat(2, 1fr); }
     }
+ 
+    /* ========================================
+       MOBILE : sidebar cachée par défaut
+       ======================================== */
     @media (max-width: 900px) {
-      .sidebar { left: 0; width: min(280px, 75vw); opacity: 1; pointer-events: auto; box-shadow: none; z-index: 2000; }
-      .sidebar.closed { left: -100%; opacity: 0; pointer-events: none; box-shadow: 24px 0 56px rgba(0,0,0,0.25); }
-      .main, footer { margin-left: 0; width: 100%; }
-      .main { padding: 2.5rem 1.5rem; width: 100%; }
-      footer { padding: 1.5rem 1.5rem; }
-      #presentation { padding: 3rem 1.8rem 2.5rem; border-radius: 22px; background-size: cover; background-position: center; }
+      /* Sidebar : cachée par défaut, glisse depuis la gauche */
+      .sidebar {
+        left: -100%;
+        opacity: 0;
+        pointer-events: none;
+        box-shadow: none;
+        z-index: 2000;
+        width: min(280px, 80vw);
+        transition: left 0.35s cubic-bezier(.77,0,.18,1), opacity 0.3s ease, box-shadow 0.35s;
+      }
+      /* Sidebar ouverte via JS (classe .open) */
+      .sidebar.open {
+        left: 0;
+        opacity: 1;
+        pointer-events: auto;
+        box-shadow: 8px 0 48px rgba(0,0,0,0.5);
+      }
+ 
+      /* Overlay visible quand sidebar ouverte */
+      .sidebar-overlay { display: block; }
+ 
+      /* Main et footer : pas de marge gauche */
+      .main { margin-left: 0; width: 100%; padding: 2.5rem 1.5rem; padding-top: 4.5rem; }
+      footer { margin-left: 0; padding: 1.5rem 1.5rem; }
+ 
+      /* Bouton hamburger visible */
+      .hamburger-btn { display: flex; }
+ 
+      #presentation { padding: 3rem 1.8rem 2.5rem; border-radius: 22px; }
       .hero-title { font-size: clamp(2rem, 7vw, 3.5rem); }
       .hero-profile-card { flex-wrap: wrap; justify-content: space-between; gap: 1rem; }
       .hero-profile-images img { width: 100px; height: 100px; }
       .hero-btns { gap: 0.8rem; }
       .hero-btns .btn { flex: 1; justify-content: center; }
-      .hamburger-btn { display: flex; }
       .contact-grid { grid-template-columns: 1fr; gap: 2rem; }
       .contact-methods { gap: 0.6rem; }
       .contact-method { padding: 0.8rem 1rem; font-size: 0.8rem; }
       footer { display: flex; flex-direction: column; gap: 1rem; align-items: flex-start; }
     }
+ 
     @media (max-width: 640px) {
       .projects-grid { grid-template-columns: 1fr; gap: 0.95rem; }
       .services-grid { grid-template-columns: 1fr; gap: 0.95rem; }
       .stats-row { flex-direction: column; gap: 1px; }
       .highlight-cards { grid-template-columns: 1fr; gap: 0.75rem; }
-      #presentation { padding: 2rem 1.2rem 1.5rem; background-size: cover; background-position: center; border-radius: 18px; }
+      #presentation { padding: 2rem 1.2rem 1.5rem; border-radius: 18px; }
       .section { margin-bottom: 3.5rem; }
       .hero-btns { flex-direction: column; gap: 0.75rem; }
       .hero-profile-card { flex-direction: column; gap: 1.2rem; padding: 1.1rem; }
@@ -664,13 +724,11 @@
       .about-text p { font-size: 0.9rem; margin-bottom: 0.9rem; }
       .tags-row { gap: 0.45rem; margin-top: 1.3rem; }
     }
+ 
     @media (max-width: 480px) {
-      :root { --sidebar-w: 0px; }
-      .main { padding: 1.25rem 0.9rem 2rem; margin-left: 0; width: 100%; }
-      footer { padding: 0.9rem 0.9rem; margin-left: 0; display: flex; flex-direction: column; gap: 0.9rem; font-size: 0.7rem; }
-      footer div { gap: 1rem; }
-      footer a { font-size: 0.7rem; }
-      #presentation { padding: 1.3rem 0.9rem 1rem; border-radius: 14px; background-size: cover; background-position: center; }
+      .main { padding: 1.25rem 0.9rem 2rem; padding-top: 4rem; }
+      footer { padding: 0.9rem; font-size: 0.7rem; }
+      #presentation { padding: 1.3rem 0.9rem 1rem; border-radius: 14px; }
       .hero-greeting { font-size: 0.75rem; margin-bottom: 0.8rem; }
       .hero-title { font-size: clamp(1.6rem, 9vw, 2.4rem); margin-bottom: 0.8rem; }
       .hero-desc { font-size: 0.85rem; margin-bottom: 1.2rem; }
@@ -730,7 +788,7 @@
       .skill-level { font-size: 0.55rem; padding: 0.15rem 0.5rem; }
       .skill-bar-wrap { height: 3px; }
       .sidebar-profile { margin-bottom: 1.5rem; }
-      .sidebar-name { font-size: 0.95rem; margin-bottom: 0.15rem; }
+      .sidebar-name { font-size: 0.95rem; }
       .sidebar-role { font-size: 0.65rem; }
       .sidebar-location { font-size: 0.65rem; }
       .sidebar-avatar { width: 80px; height: 80px; }
@@ -741,8 +799,9 @@
       .modal-content { width: 92%; max-width: 500px; }
       .close-modal { width: 36px; height: 36px; font-size: 24px; }
     }
+ 
     @media (max-width: 360px) {
-      .main { padding: 1rem 0.7rem; }
+      .main { padding: 1rem 0.7rem; padding-top: 3.5rem; }
       .hero-title { font-size: clamp(1.4rem, 7vw, 2rem); }
       .hero-desc { font-size: 0.8rem; }
       .hero-profile-card { padding: 0.6rem; gap: 0.7rem; }
@@ -754,7 +813,6 @@
       .stat-num { font-size: 1.2rem; }
       .stat-lbl { font-size: 0.55rem; }
       .project-img { height: 100px; }
-      .project-card { padding: 0.7rem; border-radius: 6px; }
       .service-card { padding: 1rem; border-radius: 6px; }
       .contact-method { padding: 0.65rem 0.75rem; font-size: 0.7rem; }
       .form-input, .form-textarea { padding: 0.65rem 0.75rem; font-size: 0.75rem; }
@@ -769,16 +827,22 @@
     <div class="loader-spinner"></div>
   </div>
  
-  <button class="hamburger-btn" id="hamburgerBtn" aria-label="Menu">
+  <!-- Overlay backdrop pour fermer la sidebar -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+ 
+  <!-- Bouton hamburger -->
+  <button class="hamburger-btn" id="hamburgerBtn" aria-label="Menu" aria-expanded="false">
     <span></span><span></span><span></span>
   </button>
+ 
   <button class="back-to-top" id="backToTop" aria-label="Retour en haut">↑</button>
  
   <div class="layout">
     <!-- SIDEBAR -->
-    <aside class="sidebar" id="sidebar">
+    <aside class="sidebar" id="sidebar" aria-hidden="true">
       <div class="sidebar-profile">
-        <img class="sidebar-avatar" src="images/image_1_1774514633521.jpg" alt="Abdoulaye Nouridine" onerror="this.src='https://ui-avatars.com/api/?name=Abdoulaye+Nouridine&background=4ade80&color=0e1117&size=90&bold=true'"/>
+        <img class="sidebar-avatar" src="images/image_1_1774514633521.jpg" alt="Abdoulaye Nouridine"
+          onerror="this.src='https://ui-avatars.com/api/?name=Abdoulaye+Nouridine&background=4ade80&color=0e1117&size=90&bold=true'"/>
         <div class="sidebar-name">Abdoulaye Nouridine</div>
         <div class="sidebar-role">Développeur Web & Mobile</div>
         <div class="sidebar-location">📍 Afrique / Remote</div>
@@ -1067,10 +1131,11 @@
   <!-- MODAL FOR IMAGES -->
   <div id="imageModal" class="modal">
     <div class="modal-content">
-      <span class="close-modal">&times;</span>
+      <button class="close-modal" aria-label="Fermer">&times;</button>
       <img id="modalImage" src="" alt="Image agrandie" />
     </div>
   </div>
+ 
   <footer>
     <span>© 2025 Abdoulaye Nouridine — Tous droits réservés.</span>
     <div style="display:flex;gap:1.5rem;">
@@ -1096,34 +1161,93 @@
       });
     }
  
-    // ── NAV ITEMS ──
-    const navItems = document.querySelectorAll('.nav-item');
-
-    // ── HAMBURGER ──
+    // ── HAMBURGER & SIDEBAR MOBILE ──
     const hamburgerBtn = document.getElementById('hamburgerBtn');
     const sidebar = document.getElementById('sidebar');
-    if (hamburgerBtn && sidebar) {
-      hamburgerBtn.addEventListener('click', () => {
-        sidebar.classList.toggle('closed');
-      });
-      document.addEventListener('click', e => {
-        if (!sidebar.contains(e.target) && !hamburgerBtn.contains(e.target)) {
-          sidebar.classList.add('closed');
-        }
-      });
-      // Close sidebar when clicking on a nav link
-      navItems.forEach(a => a.addEventListener('click', () => sidebar.classList.add('closed')));
+    const overlay = document.getElementById('sidebarOverlay');
+    const navItems = document.querySelectorAll('.nav-item');
+ 
+    function isMobile() {
+      return window.innerWidth <= 900;
     }
-
-    // ── NAV ACTIVE ──
+ 
+    function openSidebar() {
+      sidebar.classList.add('open');
+      sidebar.setAttribute('aria-hidden', 'false');
+      hamburgerBtn.classList.add('active');
+      hamburgerBtn.setAttribute('aria-expanded', 'true');
+      overlay.classList.add('visible');
+      document.body.style.overflow = 'hidden'; // empêche le scroll du fond
+    }
+ 
+    function closeSidebar() {
+      sidebar.classList.remove('open');
+      sidebar.setAttribute('aria-hidden', 'true');
+      hamburgerBtn.classList.remove('active');
+      hamburgerBtn.setAttribute('aria-expanded', 'false');
+      overlay.classList.remove('visible');
+      document.body.style.overflow = '';
+    }
+ 
+    // Gestion desktop vs mobile au chargement et au resize
+    function handleResize() {
+      if (!isMobile()) {
+        // Desktop : sidebar toujours visible, pas d'overlay
+        sidebar.classList.remove('open'); // la classe open n'est pas nécessaire en desktop (CSS gère via media query)
+        sidebar.setAttribute('aria-hidden', 'false');
+        overlay.classList.remove('visible');
+        document.body.style.overflow = '';
+        hamburgerBtn.classList.remove('active');
+      } else {
+        // Mobile : ferme si on passe en mobile
+        if (sidebar.classList.contains('open')) {
+          // garde ouverte si déjà ouverte
+        } else {
+          sidebar.setAttribute('aria-hidden', 'true');
+        }
+      }
+    }
+ 
+    // Init
+    handleResize();
+    window.addEventListener('resize', handleResize);
+ 
+    // Clic hamburger
+    hamburgerBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (sidebar.classList.contains('open')) {
+        closeSidebar();
+      } else {
+        openSidebar();
+      }
+    });
+ 
+    // Clic sur l'overlay = fermer
+    overlay.addEventListener('click', closeSidebar);
+ 
+    // Fermer au clic sur un lien nav (mobile)
+    navItems.forEach(a => {
+      a.addEventListener('click', () => {
+        if (isMobile()) closeSidebar();
+      });
+    });
+ 
+    // Fermer avec Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && sidebar.classList.contains('open')) {
+        closeSidebar();
+      }
+    });
+ 
+    // ── NAV ACTIVE (scroll spy) ──
     const sections = document.querySelectorAll('section[id]');
     window.addEventListener('scroll', () => {
       let current = '';
-      sections.forEach(s => { if (window.scrollY >= s.offsetTop - 100) current = s.id; });
+      sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) current = s.id; });
       navItems.forEach(a => {
         a.classList.toggle('active', a.getAttribute('href') === '#' + current);
       });
-    });
+    }, { passive: true });
  
     // ── HERO BACKGROUND SLIDESHOW ──
     const heroSection = document.getElementById('presentation');
@@ -1139,10 +1263,12 @@
     }, 5000);
  
     // ── REVEAL ──
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+    const revealObserver = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); revealObserver.unobserve(e.target); }
+      });
     }, { threshold: 0.08 });
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
  
     // ── SKILL BARS ──
     const skillObserver = new IntersectionObserver(entries => {
@@ -1162,8 +1288,8 @@
       const step = ts => {
         if (!s) s = ts;
         const p = Math.min((ts - s) / dur, 1);
-        const e = 1 - Math.pow(1 - p, 3);
-        el.textContent = Math.floor(e * target) + suffix;
+        const ease = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.floor(ease * target) + suffix;
         if (p < 1) requestAnimationFrame(step);
       };
       requestAnimationFrame(step);
@@ -1178,7 +1304,8 @@
         }
       });
     }, { threshold: 0.3 });
-    document.querySelector('.stats-row') && statsObs.observe(document.querySelector('.stats-row'));
+    const statsRow = document.querySelector('.stats-row');
+    if (statsRow) statsObs.observe(statsRow);
  
     // ── PROJECT FILTER ──
     document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -1194,44 +1321,57 @@
  
     // ── CONTACT FORM ──
     async function handleSubmit() {
-      const name = document.getElementById('fieldName').value.trim();
-      const email = document.getElementById('fieldEmail').value.trim();
+      const name    = document.getElementById('fieldName').value.trim();
+      const email   = document.getElementById('fieldEmail').value.trim();
       const subject = document.getElementById('fieldSubject').value.trim();
       const message = document.getElementById('fieldMessage').value.trim();
-      const status = document.getElementById('formStatus');
-      const btn = document.getElementById('submitBtn');
-      if (!name || !email || !subject || !message) { showStatus('Veuillez remplir tous les champs.', 'error'); return; }
-      btn.disabled = true; btn.classList.add('loading');
+      const status  = document.getElementById('formStatus');
+      const btn     = document.getElementById('submitBtn');
+      if (!name || !email || !subject || !message) {
+        showStatus('Veuillez remplir tous les champs.', 'error');
+        return;
+      }
+      btn.disabled = true;
+      btn.classList.add('loading');
       btn.querySelector('.btn-text').textContent = 'Envoi en cours…';
-      status.className = 'form-status'; status.style.display = 'none';
+      status.className = 'form-status';
+      status.style.display = 'none';
       try {
         const fd = new FormData();
         fd.append('access_key', '77236ab6-8bb7-4efd-9814-dbe23435fd89');
-        fd.append('name', name); fd.append('email', email);
-        fd.append('subject', subject); fd.append('message', message);
-        const res = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: fd });
+        fd.append('name', name);
+        fd.append('email', email);
+        fd.append('subject', subject);
+        fd.append('message', message);
+        const res    = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: fd });
         const result = await res.json();
         if (result.success) {
           showStatus('Message envoyé avec succès ! Merci de m\'avoir contacté.', 'success');
           document.getElementById('contactForm').reset();
           btn.querySelector('.btn-text').textContent = 'Envoyé ✓';
           setTimeout(() => { btn.querySelector('.btn-text').textContent = 'Envoyer le message →'; }, 4000);
-        } else throw new Error(result.message);
+        } else {
+          throw new Error(result.message);
+        }
       } catch(err) {
         showStatus('Une erreur est survenue. Veuillez réessayer ou me contacter directement.', 'error');
         btn.querySelector('.btn-text').textContent = 'Envoyer le message →';
-      } finally { btn.disabled = false; btn.classList.remove('loading'); }
+      } finally {
+        btn.disabled = false;
+        btn.classList.remove('loading');
+      }
     }
     function showStatus(msg, type) {
       const s = document.getElementById('formStatus');
-      s.textContent = msg; s.className = `form-status ${type} visible`;
+      s.textContent = msg;
+      s.className = `form-status ${type} visible`;
     }
-
+ 
     // ── IMAGE MODAL ──
-    const modal = document.getElementById('imageModal');
-    const modalImg = document.getElementById('modalImage');
-    const closeModal = document.querySelector('.close-modal');
-
+    const modal     = document.getElementById('imageModal');
+    const modalImg  = document.getElementById('modalImage');
+    const closeBtn  = document.querySelector('.close-modal');
+ 
     document.querySelectorAll('.hero-profile-images img').forEach(img => {
       img.addEventListener('click', () => {
         modal.style.display = 'block';
@@ -1239,40 +1379,26 @@
         modalImg.alt = img.alt;
       });
     });
-
-    closeModal.addEventListener('click', () => {
-      modal.style.display = 'none';
-    });
-
-    // Close modal when clicking outside
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) {
-        modal.style.display = 'none';
-      }
-    });
-
-    // Close modal with ESC key
+    closeBtn.addEventListener('click', () => { modal.style.display = 'none'; });
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && modal.style.display === 'block') {
-        modal.style.display = 'none';
+      if (e.key === 'Escape') {
+        if (modal.style.display === 'block') modal.style.display = 'none';
+        if (isMobile() && sidebar.classList.contains('open')) closeSidebar();
       }
     });
-
+ 
     // ── BACK TO TOP ──
     const backToTopBtn = document.getElementById('backToTop');
     window.addEventListener('scroll', () => {
-      if (window.scrollY > 300) {
-        backToTopBtn.classList.add('visible');
-      } else {
-        backToTopBtn.classList.remove('visible');
-      }
-    });
+      backToTopBtn.classList.toggle('visible', window.scrollY > 300);
+    }, { passive: true });
     backToTopBtn.addEventListener('click', () => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
-
+ 
     // ── LOADER ──
-    document.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('load', () => {
       document.getElementById('loader').classList.add('hidden');
     });
   </script>
